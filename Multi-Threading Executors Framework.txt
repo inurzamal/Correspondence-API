@@ -1,0 +1,19 @@
+ExecutorService exService = Executors.newFixedThreadPool(10);
+ExecutorCompletionService<Object> pool = new ExecutorCompletionService<>(exService);
+		
+List<CoTriggersEntity> pendingTrgs = coTrgRepo.findByTrgStatus("Pending");
+		
+for (CoTriggersEntity coTrigger : pendingTrgs) {
+			
+	pool.submit(new Callable<Object>() {
+		@Override
+		public Object call() throws Exception {
+			try {
+				processTrigger(coTrigger);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	});
+}
